@@ -9,16 +9,21 @@ class App:
 		frame = Frame(master)
 #		frame.pack()
 
-		self.k_slider = Scale(master, from_=1, to=50, orient=HORIZONTAL, label='K Value')
-		self.k_slider.grid(row=0,column=0)
+		self.master = master
+		
+		self.var = StringVar(master)
+		self.var.set("uniform") # initial value
+
+		self.k_slider = Scale(master, from_=1, to=50, orient=HORIZONTAL, label='K Value', length=300)
+		self.k_slider.grid(row=0,column=0, columnspan=2)
 		#self.k_slider.pack()
 
-		self.mesh_slider = Scale(master, from_=0.1, to=1.0, orient=HORIZONTAL, label='Mesh Resolution', resolution=0.05 )
-		self.mesh_slider.grid(row=1,column=0)
+		self.mesh_slider = Scale(master, from_=0.1, to=1.0, orient=HORIZONTAL, label='Mesh Resolution', resolution=0.05, length=300)
+		self.mesh_slider.grid(row=1,column=0, columnspan=2)
 		#self.mesh_slider.pack()
 
 		self.refresh = Button(master, text="Refresh", command=self.refresh)
-		self.refresh.grid(row=2, column=0)
+		self.refresh.grid(row=2, column=0, columnspan=2)
 		#self.refresh.pack(side=LEFT)
 
 		## Define 6 Input Fields
@@ -49,6 +54,9 @@ class App:
 		self.degree_spondylolisthesis = Entry(relief=SUNKEN,width=8)
 		self.degree_spondylolisthesis.grid(row=8,column=1)
 
+		Label(text='weighting algorithm', width=30).grid(row=9, column=0)
+		self.weights = OptionMenu(master, self.var, "uniform", "distance")
+		self.weights.grid(row=9, column =1)
 
 	def refresh(self):
 		new_entry = [
@@ -59,10 +67,13 @@ class App:
 			float(self.pelvic_radius.get()),
 			float(self.degree_spondylolisthesis.get())
 		]
-		Visualizer.makeGraph(self.k_slider.get(), self.mesh_slider.get(), new_entry)
+
+		print(self.var.get())
+
+		Visualizer.makeGraph(self.k_slider.get(), self.mesh_slider.get(), new_entry, self.var.get())
 
 root = Tk()
-
 app = App(root)
+app.master.title("Spinal Classifier Control Panel")
 
 root.mainloop()

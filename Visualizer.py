@@ -47,7 +47,7 @@ colours = PCAData['Class']
 
 # Create color maps
 
-def makeGraph(n_neighbors, h, patient):
+def makeGraph(n_neighbors, h, patient, weighting):
 
     plt.close()
 
@@ -83,20 +83,20 @@ def makeGraph(n_neighbors, h, patient):
 
     # Generate KNN Plot (largely taken from SKLearn Documentation)
 
-    for weights in ['uniform', 'distance']:
-        # we create an instance of Neighbours Classifier and fit the data.
-        clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
-        clf.fit(X, y)
+#   for weights in ['uniform', 'distance']:
+    # we create an instance of Neighbours Classifier and fit the data.
+    clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weighting)
+    clf.fit(X, y)
 
-        # Plot the decision boundary. For that, we will assign a color to each
-        # point in the mesh [x_min, x_max]x[y_min, y_max].
+    # Plot the decision boundary. For that, we will assign a color to each
+    # point in the mesh [x_min, x_max]x[y_min, y_max].
 
-        x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
-        y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
-        xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
-                             np.arange(y_min, y_max, h))
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                         np.arange(y_min, y_max, h))
 
-        Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
 
     # Put the result into a color plot
     Z = Z.reshape(xx.shape)
@@ -109,7 +109,7 @@ def makeGraph(n_neighbors, h, patient):
     plt.xlim(xx.min(), xx.max())
     plt.ylim(yy.min(), yy.max())
     plt.title("3-Class classification (k = %i, weights = '%s')"
-              % (n_neighbors, weights))
+              % (n_neighbors, weighting))
 
     red_patch = mpatches.Patch(color='red', label='Hernia')
     blue_patch = mpatches.Patch(color='blue', label='Normal')
