@@ -1,4 +1,22 @@
-from tkinter import *
+"""
+Spinal Health Classification w/ Control Panel.
+Uses a visual KNN algorithm to classify spinal abnormalities.
+Hyperparameters of KNN can be controlled from GUI. 
+
+Data Taken from UCI Machine Learning Database:
+https://www.kaggle.com/uciml/biomechanical-features-of-orthopedic-patients
+
+Developed at UVic Hackathing 2017 in Victoria, BC.
+
+Files: 
+
+Visualized.py:
+contains data importing and transformations. 
+
+GUI.py:
+Contains tkinter GUI setup. Calls function from visualized.py when refresh button is pressed. 
+"""
+
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
