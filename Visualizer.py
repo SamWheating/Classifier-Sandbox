@@ -37,12 +37,10 @@ PCAData = pandas.DataFrame(PCAData)
 
 PCAData = pandas.concat([PCAData, labels_ints], axis=1)
 PCAData.columns = ['PCA1', 'PCA2', 'Class']
-print(PCAData)
 
 # remove outliers:
 
 PCAData = PCAData.query('PCA1 < 150')
-
 
 classes = PCAData['Class']
 colours = PCAData['Class']
