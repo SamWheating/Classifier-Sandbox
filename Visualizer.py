@@ -1,4 +1,4 @@
-import tkinter
+from tkinter import *
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -17,8 +17,6 @@ matplotlib.use('TkAgg')
 # GLOBAL VARIABLES & CONTROLS
 
 INPUT_DATA = "SpinalData.csv"
-n_neighbors = 10
-h = .2  # step size in the mesh
 
 # Load and Triage Data:
 
@@ -45,67 +43,88 @@ print(PCAData)
 
 PCAData = PCAData.query('PCA1 < 150')
 
-X = PCAData.drop(['Class'], axis=1)
-y = PCAData['Class']
-
-PCAData.to_csv("PCAexport.csv")
-
-print(X)
-
 
 classes = PCAData['Class']
 colours = PCAData['Class']
 
 # Create color maps
 
-cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
-cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
+def makeGraph(n_neighbors, h, patient):
 
-# Convert Dataframes to Numpy Arrays
+    plt.close()
 
-X = X.as_matrix()
-y = y.as_matrix()
+    print("Regenerating plot...\n")
 
-# Generate KNN Plot (largely taken from SKLearn Documentation)
+    patient = np.array(patient)
+    patient = patient.reshape(1, -1)
+    patient = pca.transform(patient)
 
-for weights in ['uniform', 'distance']:
-    # we create an instance of Neighbours Classifier and fit the data.
-    clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
-    clf.fit(X, y)
+    print(patient)
 
-    print("made it to 1")
+    y = PCAData['Class']
+    X = PCAData.drop(['Class'], axis=1)
 
-    # Plot the decision boundary. For that, we will assign a color to each
-    # point in the mesh [x_min, x_max]x[y_min, y_max].
-    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
-    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+#    y = y.reshape(-1,1)
 
-    print("made it to 2")
+    cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
+    cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF', '#FF00FF'])
 
-    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
-                         np.arange(y_min, y_max, h))
-    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+    # Convert Dataframes to Numpy Arrays
+    
+    X = X.as_matrix()
+    y = y.as_matrix()
 
-    print("made it to 3")
+    X = np.append(X, patient, axis=0)
+    y = np.append(y, 3)
 
-# Put the result into a color plot
-Z = Z.reshape(xx.shape)
-plt.figure()
-plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
+    X_all = X
+    y_all = y
 
-# Plot also the training points
-plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold,
-            edgecolor='k', s=20)
-plt.xlim(xx.min(), xx.max())
-plt.ylim(yy.min(), yy.max())
-plt.title("3-Class classification (k = %i, weights = '%s')"
-          % (n_neighbors, weights))
+    X = X[:-1]
+    y = y[:-1]
 
-red_patch = mpatches.Patch(color='red', label='Hernia')
-blue_patch = mpatches.Patch(color='blue', label='Normal')
-green_patch = mpatches.Patch(color='green', label='Spondly')
-plt.legend(handles=[red_patch, blue_patch, green_patch], loc=4)
+    # Generate KNN Plot (largely taken from SKLearn Documentation)
+
+    for weights in ['uniform', 'distance']:
+        # we create an instance of Neighbours Classifier and fit the data.
+        clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
+        clf.fit(X, y)
+
+        # Plot the decision boundary. For that, we will assign a color to each
+        # point in the mesh [x_min, x_max]x[y_min, y_max].
+
+        x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+        y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+        xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                             np.arange(y_min, y_max, h))
+
+        Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+
+    # Put the result into a color plot
+    Z = Z.reshape(xx.shape)
+    plt.figure(figsize=(12,9))
+    plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
+
+    # Plot also the training points
+    plt.scatter(X_all[:, 0], X_all[:, 1], c=y_all, cmap=cmap_bold, 
+                edgecolor='k', s=20)
+    plt.xlim(xx.min(), xx.max())
+    plt.ylim(yy.min(), yy.max())
+    plt.title("3-Class classification (k = %i, weights = '%s')"
+              % (n_neighbors, weights))
+
+    red_patch = mpatches.Patch(color='red', label='Hernia')
+    blue_patch = mpatches.Patch(color='blue', label='Normal')
+    green_patch = mpatches.Patch(color='green', label='Spondylolisthesis')
+    pink_patch = mpatches.Patch(color='#FF00FF', label='Patient')
+    plt.legend(handles=[red_patch, blue_patch, green_patch, pink_patch], loc=4)
 
 
+    if(clf.predict(X_all[-1].reshape(1, -1)) == 1):
+        print("Patient likely has Spondylolisthesis")
+    if(clf.predict(X_all[-1].reshape(1, -1)) == 0):
+        print("Patient spine is possibly herniated")
+    if(clf.predict(X_all[-1].reshape(1, -1)) == 2):
+        print("Patient spine is normal")
 
-plt.show()
+    plt.show()
