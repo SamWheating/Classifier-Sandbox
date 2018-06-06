@@ -11,7 +11,7 @@ After studying statistics and data analysis a little more, I've realized that th
 
 **Try it Out!:**
 
-start with 'python GUI.py'
+start with `python GUI.py`
 
 put in a set of values!
 
