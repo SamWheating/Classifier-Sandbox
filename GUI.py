@@ -1,5 +1,23 @@
+"""
+Spinal Health Classification w/ Control Panel.
+Uses a visual KNN algorithm to classify spinal abnormalities.
+Hyperparameters of KNN can be controlled from GUI. 
+
+Data Taken from UCI Machine Learning Database:
+https://www.kaggle.com/uciml/biomechanical-features-of-orthopedic-patients
+
+Developed at UVic Hackathing 2017 in Victoria, BC.
+
+Files: 
+
+Visualized.py:
+contains data importing and transformations. 
+
+GUI.py:
+Contains tkinter GUI setup. Calls function from visualized.py when refresh button is pressed. 
+"""
+
 from tkinter import *
-import time
 import Visualizer
 
 class App:
@@ -18,7 +36,8 @@ class App:
 		self.k_slider.grid(row=0,column=0, columnspan=2)
 		#self.k_slider.pack()
 
-		self.mesh_slider = Scale(master, from_=0.1, to=1.0, orient=HORIZONTAL, label='Mesh Resolution', resolution=0.05, length=300)
+		if Visualizer.REDUCTION == "LDA": self.mesh_slider = Scale(master, from_=0.02, to=0.2, orient=HORIZONTAL, label='Mesh Resolution', resolution=0.01, length=300)
+		else: self.mesh_slider = Scale(master, from_=0.1, to=1.0, orient=HORIZONTAL, label='Mesh Resolution', resolution=0.05, length=300)
 		self.mesh_slider.grid(row=1,column=0, columnspan=2)
 		#self.mesh_slider.pack()
 
@@ -31,7 +50,7 @@ class App:
 		features = ['pelvic_incidence', 'pelvic_tilt', 'lumbar_lordosis_angle' , 'sacral_slope', 'pelvic_radius', 'degree_spondylolisthesis']
 
 		Label(text='pelvic_incidence', relief=RIDGE,width=30).grid(row=3,column=0)
-		self.pelvic_incidence = Entry(relief=SUNKEN,width=8)
+		self.pelvic_incidence = Entry(relief=SUNKEN,width=8, text='20')
 		self.pelvic_incidence.grid(row=3,column=1)
 
 		Label(text='pelvic_tilt', relief=RIDGE,width=30).grid(row=4,column=0)

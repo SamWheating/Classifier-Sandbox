@@ -25,8 +25,16 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 import matplotlib.patches as mpatches
 from sklearn import neighbors, datasets
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.decomposition import PCA
 import pandas
+import sys
+
+try:
+    if sys.argv[1] == "-LDA":
+        REDUCTION = "LDA"
+except:
+    REDUCTION = "PCA"
 
 # end imports
 
@@ -46,8 +54,14 @@ labels_ints = labels.map(mapping)
 
 # Use PCA to reduce to 2 dimensional data
 
-pca = PCA(n_components=2)
-pca.fit(inputData)
+if REDUCTION == "LDA":
+    pca = LinearDiscriminantAnalysis(n_components=2)
+    pca.fit(inputData, labels_ints)
+
+else: 
+    pca = PCA(n_components=2)
+    pca.fit(inputData)
+
 PCAData = pca.transform(inputData)
 PCAData = pandas.DataFrame(PCAData)
 
